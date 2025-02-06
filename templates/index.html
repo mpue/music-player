@@ -1,3 +1,48 @@
+# flask_music_player/app.py
+
+from flask import Flask, render_template, jsonify, send_from_directory
+import os
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+MUSIC_DIR = "./music"
+playlist = [file for file in os.listdir(MUSIC_DIR) if file.endswith(".mp3")]
+current_index = 0
+
+@app.route("/")
+def index():
+    return render_template("index.html", title=playlist[current_index] if playlist else "No Music", playlist=playlist, current_track=playlist[current_index] if playlist else "No Music")
+
+@app.route("/play")
+def play():
+    return jsonify(status="playing", track=playlist[current_index])
+
+@app.route("/stop")
+def stop():
+    return jsonify(status="stopped")
+
+@app.route("/next")
+def next():
+    global current_index
+    current_index = (current_index + 1) % len(playlist)
+    return jsonify(status="playing", track=playlist[current_index])
+
+@app.route("/prev")
+def prev():
+    global current_index
+    current_index = (current_index - 1) % len(playlist)
+    return jsonify(status="playing", track=playlist[current_index])
+
+@app.route("/music/<filename>")
+def serve_music(filename):
+    return send_from_directory(MUSIC_DIR, filename)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+# templates/index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,17 +53,25 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #181818;
+            background: url('https://source.unsplash.com/1600x900/?space,nebula') no-repeat center center fixed;
+            background-size: cover;
             color: white;
             padding: 20px;
         }
         .player {
             margin-top: 50px;
-            background: #282828;
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
             display: inline-block;
+        }
+        .digital-clock {
+            font-size: 50px;
+            font-family: 'Courier New', Courier, monospace;
+            color: cyan;
+            text-shadow: 0 0 10px cyan;
+            margin-bottom: 20px;
         }
         button {
             padding: 10px 20px;
@@ -41,6 +94,7 @@
 </head>
 <body>
     <h1>🎵 Music Player 🎵</h1>
+    <div class="digital-clock" id="clock">00:00:00</div>
     <div class="player">
         <h2 id="track-title">{{ current_track }}</h2>
         <audio id="audio" controls>
@@ -61,6 +115,9 @@
         const audioSource = document.getElementById("audio-source");
         const nowPlaying = document.getElementById("now-playing");
         const trackTitle = document.getElementById("track-title");
+        const clock = document.getElementById("clock");
+
+        audio.addEventListener("ended", nextTrack);
 
         function playTrack() {
             audio.play();
@@ -88,6 +145,16 @@
             audio.load();
             playTrack();
         }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            clock.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
     </script>
 </body>
 </html>
