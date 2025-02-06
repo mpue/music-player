@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+        }
+        .player {
+            margin-top: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            background-color: #1DB954;
+            color: white;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #1ed760;
+        }
+    </style>
+</head>
+<body>
+    <h1>Music Player</h1>
+    <div class="player">
+        <audio id="audio" controls>
+            <source id="audio-source" src="/music/{{ playlist[0] }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        <br>
+        <button onclick="prevTrack()">Previous</button>
+        <button onclick="playTrack()">Play</button>
+        <button onclick="stopTrack()">Stop</button>
+        <button onclick="nextTrack()">Next</button>
+    </div>
+    <script>
+        let playlist = {{ playlist | tojson }};
+        let currentIndex = 0;
+        const audio = document.getElementById("audio");
+        const audioSource = document.getElementById("audio-source");
+
+        function playTrack() {
+            audio.play();
+        }
+
+        function stopTrack() {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+
+        function nextTrack() {
+            currentIndex = (currentIndex + 1) % playlist.length;
+            updateTrack();
+        }
+
+        function prevTrack() {
+            currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
+            updateTrack();
+        }
+
+        function updateTrack() {
+            audioSource.src = "/music/" + playlist[currentIndex];
+            audio.load();
+            playTrack();
+        }
+    </script>
+</body>
+</html>
