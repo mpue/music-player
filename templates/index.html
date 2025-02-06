@@ -8,11 +8,17 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #121212;
+            background-color: #181818;
             color: white;
+            padding: 20px;
         }
         .player {
             margin-top: 50px;
+            background: #282828;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            display: inline-block;
         }
         button {
             padding: 10px 20px;
@@ -27,26 +33,34 @@
         button:hover {
             background-color: #1ed760;
         }
+        .track-info {
+            margin-top: 10px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
-    <h1>Music Player</h1>
+    <h1>🎵 Music Player 🎵</h1>
     <div class="player">
+        <h2 id="track-title">{{ current_track }}</h2>
         <audio id="audio" controls>
             <source id="audio-source" src="/music/{{ playlist[0] }}" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
+        <div class="track-info">Now Playing: <span id="now-playing">{{ playlist[0] }}</span></div>
         <br>
-        <button onclick="prevTrack()">Previous</button>
-        <button onclick="playTrack()">Play</button>
-        <button onclick="stopTrack()">Stop</button>
-        <button onclick="nextTrack()">Next</button>
+        <button onclick="prevTrack()">⏮ Previous</button>
+        <button onclick="playTrack()">▶ Play</button>
+        <button onclick="stopTrack()">⏹ Stop</button>
+        <button onclick="nextTrack()">⏭ Next</button>
     </div>
     <script>
         let playlist = {{ playlist | tojson }};
         let currentIndex = 0;
         const audio = document.getElementById("audio");
         const audioSource = document.getElementById("audio-source");
+        const nowPlaying = document.getElementById("now-playing");
+        const trackTitle = document.getElementById("track-title");
 
         function playTrack() {
             audio.play();
@@ -69,6 +83,8 @@
 
         function updateTrack() {
             audioSource.src = "/music/" + playlist[currentIndex];
+            nowPlaying.textContent = playlist[currentIndex];
+            trackTitle.textContent = playlist[currentIndex];
             audio.load();
             playTrack();
         }
