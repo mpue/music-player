@@ -111,6 +111,28 @@
             const seconds = now.getSeconds().toString().padStart(2, '0');
             clock.textContent = `${hours}:${minutes}:${seconds}`;
         }
+
+
+        if ('mediaSession' in navigator) {
+
+            navigator.mediaSession.setActionHandler('play', () => {
+                playTrack(); // Deine Play-Funktion
+            });
+
+            navigator.mediaSession.setActionHandler('pause', () => {
+                stopTrack(); // Deine Pause-Funktion
+            });
+
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                prevTrack(); // Funktion zum vorherigen Track
+            });
+
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                nextTrack(); // Funktion zum nächsten Track
+            });
+        }
+
+
         setInterval(updateClock, 1000);
         updateClock();
     </script>
