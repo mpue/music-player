@@ -1,6 +1,6 @@
 # Music Player
 
-A simple music player that can play audio files.
+A simple music player for the web that can play audio files from a directory.
 
 ## Included Music and Copyright
 
@@ -10,9 +10,6 @@ This music player includes original music composed by me. While I retain the cop
 
 - Playback of audio files
 - Support for formats like MP3, WAV, OGG
-- Play, Pause, Stop
-- Volume control
-- Progress bar
 - Playlist support
 
 ## Installation
